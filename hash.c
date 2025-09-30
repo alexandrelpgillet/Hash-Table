@@ -1,4 +1,5 @@
 #include <stlib.h>
+#include <stdio.h>
 
 typedef struct {
   
@@ -252,20 +253,68 @@ char * searchList(list *l,char *s){
     
     int stringValueSearch = convertAscIIforInt(s);
     
+    int quant =0;
+    
+
     while(aux!=NULL){
         
         //Caso a string seja encontrada  retornamos uma cópia de char dela (não retornamos a localização do meu item por questão de segurança)
         if(aux->string_value == stringValueSearch)
         {
-            char *c = (char *) malloc(sizeof(aux->string));
-            
-            copyString(c, aux->string);
 
-            return c;
+            int res = deepCompareString(aux->string, s);
+            
+            if(res==0)
+            {   
+                if(quant ==0) 
+                {   
+
+                    
+                    char *c = (char *) malloc(sizeof(aux->string));
+            
+                    copyString(c, aux->string);
+                }
+
+                quant+=1;
+
+    
+            }
+                   
         }
 
         aux= aux->next;
 
+    }
+    
+    //Caso exista mais de um nome em comum, printamos o número de usuário encontrados
+    if(quant>1){
+        
+        
+        int decimal_case = 0;
+        int quant_aux = quant;
+        
+        while(quant_aux>0){
+
+            decimal_case+=1;
+            quant_aux= (int)quant_aux/10;
+        }
+
+        char *quantString = (char*)malloc(sizeof(char*)*decimal_case);
+
+        sprintf(quantString,"%d",quant)
+
+        char *resp = concatString (quantString, "user's found by name");
+
+        resp = concatString(resp , c);
+        
+
+        return resp;
+    }
+
+    //Caso só tenha um usuário retornamos somente o nome dele
+    else
+    {
+        return c;
     }
 
     return NULL;
@@ -303,8 +352,63 @@ int convertAscIIforInt(char *c){
     }
 
     return num;
+
 }
 
+
+//Função para fazer uma comparação profunda das Strings de nome
+int deepCompareString(char *a, char *b){
+
+
+    if(sizeof(a)== sizeof(b))
+    {
+        
+        for(int i = 0 ; i<(int) sizeof (a) && a[i]!='\0' ; i++){
+            
+            if(a[i]!=b[i])
+            {
+                return -1;
+            }
+
+        }
+
+        return 0;
+        
+    }
+
+    return -1;
+}
+
+
+
+//Função para concatenar strings 
+char* concatString(char*a , char *b){
+
+    char *aux = (char*) malloc(sizeof(a) + sizeof(b)+1);
+    
+    int i,j,k;
+
+
+
+    for(i =0 ; i<(int)sizeof(a) && a[i]!='\0', i++)
+    {
+         
+        aux[i] = a[i];
+
+    }
+
+    aux[i] = " ";
+
+    for(j =i+1, k=0 ; j < (int sizeof(b)); j++;k++){
+ 
+        aux[j]=b[k];
+    };
+
+    if(a) free(a);
+    if(b) free(b);
+
+    return aux;
+}
 
 int main(){
 
