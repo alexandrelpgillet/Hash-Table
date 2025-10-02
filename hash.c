@@ -242,16 +242,20 @@ int removeList(list *l,char *s){
         
         //Caso na lista tenha apenas 1 node Head == Tail
         if(l->head == l->tail)
-        {
+        {    
+            aux->string_value = 0;
+            free(aux->string);
             free(aux);
             l->head = NULL;
             l->tail = NULL;
-            
+             
         }
 
         //Caso minha lista tenha mais de 1 node e o node a ser excluido esteja no Head
         else if(l->head){
-
+            
+            aux->string_value =0;
+            free(aux->string);
             l->head = aux->next;
             free(aux);
         }
@@ -259,10 +263,13 @@ int removeList(list *l,char *s){
         //Caso a minha lista tenha mais de 1 node e o node a ser excluido esteja no Tail
         else if(l->tail){
             
-
+   
             l->tail=prev;
             
             prev->next = NULL;
+            aux->string_value=0;          
+            free(aux->string);
+            free(aux);
 
         }
 
@@ -272,6 +279,8 @@ int removeList(list *l,char *s){
     else{
 
         prev->next = aux->next;
+        aux->string_value=0;
+        free(aux->string);
         free(aux);
     }
 
@@ -504,15 +513,15 @@ int main(){
     insertHashTable(&hash, string_test);
     insertHashTable(&hash, string_test);
 
-
+     
+    removeHashTable(&hash, string_test);
     
     char *c1 = searchHashTable(&hash, "Alexandre");
-    char *c2 = searchHashTable(&hash,"Eduardo");
+    //char *c2 = searchHashTable(&hash,"Eduardo");
     
     printf("%s\n", c1);
-    printf("%s\n",c2);
     free(c1);
-    free(c2);    
+        
 
     deleteHashTable(&hash);
 
