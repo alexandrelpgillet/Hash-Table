@@ -46,14 +46,12 @@ typedef struct{
 
 char* copyString(char *a, char*b){
     
-        printf("\n\npassed\n");
 
 
     if(b==NULL) return NULL;
     
     int i = 0;
 
-    printf("\n\npassed\n");
 
 
     while(b[i]!= '\0'){
@@ -62,7 +60,6 @@ char* copyString(char *a, char*b){
         
     };
 
-    printf("passed 2 \n");
     
     
 
@@ -676,11 +673,9 @@ int main(){
         char *string_random = genRandomString(50);
         
 
-        printf("String gerada aleatoriamento =%s\n", string_random);
 
         
         insertDicitonary(&dict, string_random);
-        printf("String gerada aleatoriamento =%s\n", string_random);
 
         insertHashTable(&hash, string_random);
 
