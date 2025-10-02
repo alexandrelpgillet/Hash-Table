@@ -28,14 +28,33 @@ typedef struct {
 }hashTable;
 
 
+
+typedef struct{
+    
+    char *string;
+
+}data;
+
+typedef struct{
+
+    data *V; 
+    int size;
+
+}dictionary;
+
 //Função para realizar a copia de strings 
 
 char* copyString(char *a, char*b){
     
+        printf("\n\npassed\n");
+
 
     if(b==NULL) return NULL;
     
     int i = 0;
+
+    printf("\n\npassed\n");
+
 
     while(b[i]!= '\0'){
         
@@ -43,6 +62,7 @@ char* copyString(char *a, char*b){
         
     };
 
+    printf("passed 2 \n");
     
     
 
@@ -157,6 +177,59 @@ char* concatString(char*a , char *b, int isDynamicAllocationMemoryA, int isDynam
     return aux;
 }
 
+
+dictionary* createDictionary(dictionary *d, int size){
+     
+    d->V = (data*) malloc(sizeof(data)*size);
+    
+    d->size =0;
+
+    printf("POS = %d\n", d->size);
+
+    if(!d) exit (-1);
+
+    return d;
+
+}
+
+void insertDicitonary(dictionary *d, char *s){
+
+    int i =0;
+    int post =0;
+
+    
+     
+    if(s) 
+    {
+
+        
+        
+        d->V[pos].string = NULL;
+
+
+        d->V[pos].string= copyString(d->V[pos].string,s);
+
+
+        d->size+=1;
+       
+    }
+}
+
+void deleteDictionary(dictionary *d){
+ 
+    int size = d->size;
+
+    for(int i =0 ; i<size ; i++){
+        
+
+        free(d->V[i].string);
+
+    }
+
+    free(d->V);
+
+    d->size =0;
+}
 
 //Função para criar um node na lista 
 
@@ -515,7 +588,7 @@ long double  getStandartDeviationHashTable(hashTable *H){
         
         l = H->V+i;
 
-
+        printf("List %d size nodes = %d\n", i+1 ,l->size );
         media+= (long double) l->size;
 
     }
@@ -546,6 +619,32 @@ long double  getStandartDeviationHashTable(hashTable *H){
 
 }
 
+char *genRandomString(int maxSize){
+    
+    int i;
+
+    int size = (1+rand() % maxSize); 
+    
+    char *string = (char*) malloc(sizeof(char)*size+1);
+   
+    for(i =0 ; i< size ; i++){
+    
+        //Carateres de 32 a 126
+
+        char c = (33+rand()%94);
+        
+        string[i] = c;
+
+
+    }
+
+    string[i]='\0';
+
+    return string;
+
+}
+
+
 
 
 
@@ -553,11 +652,19 @@ int main(){
 
     hashTable hash;
     
+    dictionary dict ;
+
     createHashTable(&hash,3);
+    
+    createDictionary(&dict,10000);
 
     char string_test1[]="A"; // A == 65 % 3 = 2  
     char string_test2[]="B"; // B == 66 % 3 = 0
     char string_test3[]="C"; // C == 67 % 3 = 1
+
+    
+
+
 
     
     
@@ -565,17 +672,31 @@ int main(){
     
     for(int i =0 ; i<10000 ; i++)
     {
-        insertHashTable(&hash, string_test1);
-        insertHashTable(&hash, string_test2);
-        insertHashTable(&hash, string_test3);
-    }
+        
+        char *string_random = genRandomString(50);
+        
 
-    for(int i =0 ; i<10000; i++)
-    {
-        removeHashTable(&hash,string_test1);
-        removeHashTable(&hash,string_test2);
-        removeHashTable(&hash, string_test3);
+        printf("String gerada aleatoriamento =%s\n", string_random);
+
+        
+        insertDicitonary(&dict, string_random);
+        printf("String gerada aleatoriamento =%s\n", string_random);
+
+        insertHashTable(&hash, string_random);
+
+        free(string_random);
+
+      
     }
+    
+    /*
+    for(int i =0 ; i<10000; i++)
+    {   
+        char *c = i+1;
+        removeHashTable(&hash,c);
+        
+    }
+    */
     
 
      
@@ -590,6 +711,8 @@ int main(){
     
     //free(c1);
         
+
+    deleteDictionary(&dict);
 
     deleteHashTable(&hash);
 
