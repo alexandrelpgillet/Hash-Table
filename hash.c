@@ -29,13 +29,30 @@ typedef struct {
 
 //Função para realizar a copia de strings 
 
-void copyString(char *a, char*b){
+char* copyString(char *a, char*b){
     
 
+    if(b==NULL) return NULL;
+    
+    int i = 0;
 
-    for(int i=0 ; i< (int) sizeof(a); i++){
-        a[i]=b[i];
+    while(b[i]!= '\0'){
+        
+        i++;
+        
+    };
+
+    
+    
+
+    a = (char*)malloc(sizeof(char*)*i+1);
+    
+    for(int j=0 ; j< i; j++){
+        a[j]=b[j];
     }
+
+    return a;
+
 }
 
 //Função conversora de string para int via ASCII
@@ -43,10 +60,16 @@ int convertAscIIforInt(char *c){
     
     int num =0;
 
-    for(int i=0 ;i<(int)sizeof(c); i++) 
+    int i =0;
+    
+
+    while(c[i]!='\0')
     {
         num+=c[i];
+        i++;
+
     }
+    
 
     return num;
 
@@ -115,14 +138,19 @@ node* createNode(char *s){
     node *p = (node*) malloc(sizeof(node));
     
     if(!p) return NULL;
+
     
-    p->string = (char*) malloc(sizeof(s));
+    
     
 
-    copyString(p->string, s);
+  
+    p->string = copyString(p->string, s);
+
+
     
     p->string_value = convertAscIIforInt(p->string);
     
+
     p->next = NULL;
 
     return p;
@@ -254,9 +282,9 @@ char * searchList(list *l,char *s){
                 {   
 
                     
-                    c = (char *) malloc(sizeof(aux->string));
+                
             
-                    copyString(c, aux->string);
+                    c= copyString(c, aux->string);
                 }
 
                 quant+=1;
@@ -311,11 +339,13 @@ void clearList(list *l){
 
     node *aux = l->head;
     node *temp;
-
+     
     while(aux){
-    
         temp = aux;
         aux = aux->next;
+        
+        temp->string_value=0;
+        free(temp->string);
         free(temp);
         
     }
@@ -347,6 +377,9 @@ void createHashTable(hashTable *H,int M){
 
 void insertHashTable(hashTable *H, char *string){
     
+    
+    if(string==NULL)return;
+
     int stringValue = convertAscIIforInt(string);
 
     int pos = (int) (stringValue % H->M);
@@ -404,6 +437,10 @@ void deleteHashTable(hashTable *H){
         
     }
 
+    free(H->V);
+    
+    if(H->V) exit(-1);
+
 }
 
 
@@ -418,7 +455,17 @@ void deleteHashTable(hashTable *H){
 int main(){
 
     hashTable hash;
+    
     createHashTable(&hash,7);
+
+    char string_test[4]="ade";
+    string_test[3]='\0';
+
+
+    
+
+    insertHashTable(&hash, string_test);
+
     deleteHashTable(&hash);
 
 }
