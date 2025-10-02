@@ -1,9 +1,9 @@
-#include <stlib.h>
+#include <stdlib.h>
 #include <stdio.h>
 
-typedef struct {
+typedef struct node{
   
-    node *next;
+    struct node *next;
     char *string;
     int string_value;
 
@@ -27,102 +27,85 @@ typedef struct {
 }hashTable;
 
 
-
-void createHashTable(hashTable *H,int M){
-        
-     H->V = (list*) malloc(sizeof(list)*M);
-
-     for(int i =0 ; i<M, i++){
-     
-        H->V[i]->head = NULL;
-        H->V[i]->tail = NULL;
-        H->size =0;
-     }
-     
-     H-> M = M
-     H->size = 0;
-
-     if(!H->V) exit(-1);
-
-    
-
-}
-
-
-void insertHashTable(hashTable *H, char *string){
-    
-    int stringValue = convertAscIIforInt(string);
-
-    int pos = (int) (stringValue % H->M);
-    
-    list *l =  H->(V+pos);
-
-    insertList(l,string);
-    
-    H->size+=1;
-}
-
-
-void removeHashTable(hashTable *H, char *string){
-
-    int stringValue = convertAscIIforInt(string);
-
-    int pos = (int) (stringValue % H->M);
-
-    list *l = H->(V+pos);
-
-    removeList(l,s);
-
-    H->size -=1;
-}
-
-char * searchHashTable(hashTable *H, char *string){
-
-    int stringValue = convertAscIIforInt(string);
-
-    int pos = (int) (stringValue);
-
-    list *l = H->(V+pos);
-
-    char *response = searchList(l,string);
-    
-    if(!response){
-
-        return NULL;
-    }
-
-    return response;
-}
-
-
-
-
-void deleteHashTable(hashTable *H){
-
-    int M = H->M;
-    
-    for(int i = 0 ; i< M ; i++){
-
-        
-        clearList(H->V[i]);
-        
-    }
-
-}
-
-
-
 //Função para realizar a copia de strings 
 
 void copyString(char *a, char*b){
     
 
 
-    for(int i=0 ; i< (int) sizeof(a), i++){
-        a[i]=b;
+    for(int i=0 ; i< (int) sizeof(a); i++){
+        a[i]=b[i];
     }
 }
 
+//Função conversora de string para int via ASCII
+int convertAscIIforInt(char *c){
+    
+    int num =0;
+
+    for(int i=0 ;i<(int)sizeof(c); i++) 
+    {
+        num+=c[i];
+    }
+
+    return num;
+
+}
+
+
+//Função para fazer uma comparação profunda das Strings de nome
+int deepCompareString(char *a, char *b){
+
+
+    if(sizeof(a)== sizeof(b))
+    {
+        
+        for(int i = 0 ; i<(int) sizeof (a) && a[i]!='\0' ; i++){
+            
+            if(a[i]!=b[i])
+            {
+                return -1;
+            }
+
+        }
+
+        return 0;
+        
+    }
+
+    return -1;
+}
+
+
+
+//Função para concatenar strings 
+char* concatString(char*a , char *b){
+
+    char *aux = (char*) malloc(sizeof(a) + sizeof(b)+1);
+    
+    int i,j,k;
+
+
+
+    for(i =0 ; i<(int)sizeof(a) && a[i]!='\0'; i++)
+    {
+         
+        aux[i] = a[i];
+
+    }
+
+    aux[i] = ' ';
+
+    for(j =i+1, k=0 ; j < (int) sizeof(b); j++,k++){
+ 
+        aux[j]=b[k];
+    };
+
+    if(a) free(a);
+    if(b) free(b);
+
+    return aux;
+}
 
 
 //Função para criar um node na lista 
@@ -142,7 +125,7 @@ node* createNode(char *s){
     
     p->next = NULL;
 
-    return node;
+    return p;
     
 }
 
@@ -176,8 +159,8 @@ void  insertList(list *l,char *s){
 int removeList(list *l,char *s){
 
     
-    list *prev = NULL;
-    list *aux = l->head;
+    node *prev = NULL;
+    node *aux = l->head;
 
     int stringValueSearch = convertAscIIforInt (s);
 
@@ -255,6 +238,7 @@ char * searchList(list *l,char *s){
     
     int quant =0;
     
+    char *c;
 
     while(aux!=NULL){
         
@@ -270,7 +254,7 @@ char * searchList(list *l,char *s){
                 {   
 
                     
-                    char *c = (char *) malloc(sizeof(aux->string));
+                    c = (char *) malloc(sizeof(aux->string));
             
                     copyString(c, aux->string);
                 }
@@ -301,7 +285,7 @@ char * searchList(list *l,char *s){
 
         char *quantString = (char*)malloc(sizeof(char*)*decimal_case);
 
-        sprintf(quantString,"%d",quant)
+        sprintf(quantString,"%d",quant);
 
         char *resp = concatString (quantString, "user's found by name");
 
@@ -331,7 +315,7 @@ void clearList(list *l){
     while(aux){
     
         temp = aux;
-        aux = aux->next.
+        aux = aux->next;
         free(temp);
         
     }
@@ -340,77 +324,101 @@ void clearList(list *l){
 }
 
 
-
-//Função conversora de string para int via ASCII
-int convertAscIIforInt(char *c){
-    
-    int num =0;
-
-    for(int i=0 ;i<(int)sizeof(c); i++) 
-    {
-        num+=c[i];
-    }
-
-    return num;
-
-}
-
-
-//Função para fazer uma comparação profunda das Strings de nome
-int deepCompareString(char *a, char *b){
-
-
-    if(sizeof(a)== sizeof(b))
-    {
+void createHashTable(hashTable *H,int M){
         
-        for(int i = 0 ; i<(int) sizeof (a) && a[i]!='\0' ; i++){
-            
-            if(a[i]!=b[i])
-            {
-                return -1;
-            }
+     H->V = (list*) malloc(sizeof(list)*M);
 
-        }
+     for(int i =0 ; i<M; i++){
+     
+        H->V[i].head = NULL;
+        H->V[i].tail = NULL;
+        H->size =0;
+     }
+     
+     H-> M = M;
+     H->size = 0;
 
-        return 0;
+     if(!H->V) exit(-1);
+
+    
+
+}
+
+
+void insertHashTable(hashTable *H, char *string){
+    
+    int stringValue = convertAscIIforInt(string);
+
+    int pos = (int) (stringValue % H->M);
+    
+    list *l =  H->V+pos;
+
+    insertList(l,string);
+    
+    H->size+=1;
+}
+
+
+void removeHashTable(hashTable *H, char *string){
+
+    int stringValue = convertAscIIforInt(string);
+
+    int pos = (int) (stringValue % H->M);
+
+    list *l = H->V+pos;
+
+    removeList(l,string);
+
+    H->size -=1;
+}
+
+char * searchHashTable(hashTable *H, char *string){
+
+    int stringValue = convertAscIIforInt(string);
+
+    int pos = (int) (stringValue);
+
+    list *l = H->V+pos;
+
+    char *response = searchList(l,string);
+    
+    if(!response){
+
+        return NULL;
+    }
+
+    return response;
+}
+
+
+
+
+void deleteHashTable(hashTable *H){
+
+    int M = H->M;
+    
+    for(int i = 0 ; i< M ; i++){
+
+        
+        clearList(H->V+i);
         
     }
 
-    return -1;
 }
 
 
 
-//Função para concatenar strings 
-char* concatString(char*a , char *b){
-
-    char *aux = (char*) malloc(sizeof(a) + sizeof(b)+1);
-    
-    int i,j,k;
 
 
 
-    for(i =0 ; i<(int)sizeof(a) && a[i]!='\0', i++)
-    {
-         
-        aux[i] = a[i];
 
-    }
 
-    aux[i] = " ";
 
-    for(j =i+1, k=0 ; j < (int sizeof(b)); j++;k++){
- 
-        aux[j]=b[k];
-    };
-
-    if(a) free(a);
-    if(b) free(b);
-
-    return aux;
-}
 
 int main(){
 
+    hashTable hash;
+    createHashTable(&hash,7);
+    deleteHashTable(&hash);
 
 }
