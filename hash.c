@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 typedef struct node{
   
@@ -401,7 +402,7 @@ void createHashTable(hashTable *H,int M){
      
         H->V[i].head = NULL;
         H->V[i].tail = NULL;
-        H->size =0;
+        H->V[i].size =0;
      }
      
      H-> M = M;
@@ -492,8 +493,58 @@ void deleteHashTable(hashTable *H){
 
 
 
+int getSizeHashTable(hashTable *H){
+    return H->size;
+}
+
+long double  getStandartDeviationHashTable(hashTable *H){
+
+    int i =0;
+
+     
+    list *l = NULL;
+
+    long double media = 0.0;
+    
+    long double sum=0.0;
+    
+    long double standartDeviation=0.0;
+ 
+
+    for(i =0 ; i< H->M; i++){
+        
+        l = H->V+i;
 
 
+        media+= (long double) l->size;
+
+    }
+
+    media/=(long double) H->M;
+    
+
+    for(i = 0 ; i< H->M; i++){
+        
+        l = H->V+i;
+        
+
+        sum += (long double) (l->size - media) * (l->size - media);
+        
+        
+    
+    
+
+    }
+    
+    sum/=H->M;
+
+    standartDeviation = sqrt(sum);
+
+    return standartDeviation;
+
+
+
+}
 
 
 
@@ -502,25 +553,42 @@ int main(){
 
     hashTable hash;
     
-    createHashTable(&hash,7);
+    createHashTable(&hash,3);
 
-    char string_test[]="Alexandre";
+    char string_test1[]="A"; // A == 65 % 3 = 2  
+    char string_test2[]="B"; // B == 66 % 3 = 0
+    char string_test3[]="C"; // C == 67 % 3 = 1
 
     
     
+    
+    
+    for(int i =0 ; i<10000 ; i++)
+    {
+        insertHashTable(&hash, string_test1);
+        insertHashTable(&hash, string_test2);
+        insertHashTable(&hash, string_test3);
+    }
 
-    insertHashTable(&hash, string_test);
-    insertHashTable(&hash, string_test);
-    insertHashTable(&hash, string_test);
+    for(int i =0 ; i<10000; i++)
+    {
+        removeHashTable(&hash,string_test1);
+        removeHashTable(&hash,string_test2);
+        removeHashTable(&hash, string_test3);
+    }
+    
 
      
-    removeHashTable(&hash, string_test);
+    //removeHashTable(&hash, string_test1);
     
-    char *c1 = searchHashTable(&hash, "Alexandre");
-    //char *c2 = searchHashTable(&hash,"Eduardo");
+    //char *c1 = searchHashTable(&hash, "Alexandre");
     
-    printf("%s\n", c1);
-    free(c1);
+
+    //printf("%s\n", c1);
+    
+    printf("Standart Deviation in Hash Table = %0.4Lf\n", getStandartDeviationHashTable(&hash));
+    
+    //free(c1);
         
 
     deleteHashTable(&hash);
