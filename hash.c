@@ -192,8 +192,7 @@ dictionary* createDictionary(dictionary *d, int size){
 void insertDicitonary(dictionary *d, char *s){
 
     int i =0;
-    int post =0;
-
+    int pos = d->size;
     
      
     if(s) 
