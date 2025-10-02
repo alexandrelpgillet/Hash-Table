@@ -105,30 +105,53 @@ int deepCompareString(char *a, char *b){
 
 
 //Função para concatenar strings 
-char* concatString(char*a , char *b){
+char* concatString(char*a , char *b, int isDynamicAllocationMemoryA, int isDynamicAllocationMemoryB){
 
-    char *aux = (char*) malloc(sizeof(a) + sizeof(b)+1);
     
-    int i,j,k;
+    int i =0;
+    int j= 0;
+    int k;
+    int l;
+    int m;
+
+    if(a)
+    {
+      while(a[i]!='\0') i++;
+    }
 
 
+    if(b)
+    {
+      while(b[j]!='\0') j++;
 
-    for(i =0 ; i<(int)sizeof(a) && a[i]!='\0'; i++)
+    }
+ 
+    char *aux = (char*) malloc((sizeof(char))*(i+j)+3);
+
+
+    for(k =0 ; k<i ; k++)
     {
          
-        aux[i] = a[i];
+        aux[k] = a[k];
 
     }
 
-    aux[i] = ' ';
+    aux[k] = ' ';
+    
 
-    for(j =i+1, k=0 ; j < (int) sizeof(b); j++,k++){
+    for(l =k+1, m=0 ; m < j  ; m++,l++){
  
-        aux[j]=b[k];
+        aux[l]=b[m];
     };
 
-    if(a) free(a);
-    if(b) free(b);
+    aux[l] = '\0';
+
+
+
+    if(a && isDynamicAllocationMemoryA) free(a);
+    if(b && isDynamicAllocationMemoryB) free(b);
+
+
 
     return aux;
 }
@@ -266,13 +289,13 @@ char * searchList(list *l,char *s){
     node  *aux = l->head;
     
     int stringValueSearch = convertAscIIforInt(s);
+
     
     int quant =0;
     
     char *c;
 
     while(aux!=NULL){
-        
         //Caso a string seja encontrada  retornamos uma cópia de char dela (não retornamos a localização do meu item por questão de segurança)
         if(aux->string_value == stringValueSearch)
         {
@@ -314,20 +337,24 @@ char * searchList(list *l,char *s){
             quant_aux= (int)quant_aux/10;
         }
 
-        char *quantString = (char*)malloc(sizeof(char*)*decimal_case);
-
+        char *quantString = (char*)malloc(sizeof(char)*decimal_case + 1);
+        
+        
         sprintf(quantString,"%d",quant);
 
-        char *resp = concatString (quantString, "user's found by name");
+        
 
-        resp = concatString(resp , c);
+        char *resp = concatString (quantString, "user's found by name \0",1,0);
+
+
+        resp = concatString(resp , c,1,1);
         
 
         return resp;
     }
 
     //Caso só tenha um usuário retornamos somente o nome dele
-    else
+    else if(quant ==1)
     {
         return c;
     }
@@ -412,16 +439,23 @@ char * searchHashTable(hashTable *H, char *string){
 
     int stringValue = convertAscIIforInt(string);
 
-    int pos = (int) (stringValue);
+    int pos = (int) (stringValue) % H->M;
 
     list *l = H->V+pos;
 
     char *response = searchList(l,string);
     
+    
+    
     if(!response){
+        
+        response = concatString("ERROR - User not found by name",string,0,0);
 
-        return NULL;
+        
+        return response;
     }
+
+    
 
     return response;
 }
@@ -461,14 +495,26 @@ int main(){
     
     createHashTable(&hash,7);
 
-    char string_test[4]="ade";
-    string_test[3]='\0';
+    char string_test[]="Alexandre";
 
-
+    
     
 
     insertHashTable(&hash, string_test);
+    insertHashTable(&hash, string_test);
+    insertHashTable(&hash, string_test);
+
+
+    
+    char *c1 = searchHashTable(&hash, "Alexandre");
+    char *c2 = searchHashTable(&hash,"Eduardo");
+    
+    printf("%s\n", c1);
+    printf("%s\n",c2);
+    free(c1);
+    free(c2);    
 
     deleteHashTable(&hash);
 
+    
 }
