@@ -45,9 +45,11 @@ char* copyString(char *a, char*b){
     
     
 
-    a = (char*)malloc(sizeof(char*)*i+1);
+    a = (char*)malloc(sizeof(char)*i+1);
     
-    for(int j=0 ; j< i; j++){
+    if(!a) return NULL;
+
+    for(int j=0 ; j<=i; j++){
         a[j]=b[j];
     }
 
@@ -62,6 +64,7 @@ int convertAscIIforInt(char *c){
 
     int i =0;
     
+    if(c==NULL) return -1;
 
     while(c[i]!='\0')
     {
