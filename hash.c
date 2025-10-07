@@ -3,6 +3,8 @@
 #include <math.h>
 #include <time.h>
 
+
+
 typedef struct node{
   
     struct node *next;
@@ -182,7 +184,6 @@ dictionary* createDictionary(dictionary *d, int size){
     
     d->size =0;
 
-    printf("POS = %d\n", d->size);
 
     if(!d) exit (-1);
 
@@ -554,6 +555,8 @@ void deleteHashTable(hashTable *H){
         
     }
 
+    if(H->V) free(H->V);
+
     
    
 
@@ -675,14 +678,16 @@ double beanchMarkSearch(hashTable *H, char *string){
     
     start_time = clock();
 
-    searchHashTable(H,string);
-
+    char *c = searchHashTable(H,string);
+    
+    
     end_time = clock();
     
     time = end_time - start_time;
 
     time_in_seconds = ((double)time)/ CLOCKS_PER_SEC;
-
+    
+    free(c);
     return time_in_seconds;
 
 
@@ -709,15 +714,23 @@ void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTes
 
     double *times_Search;
     double timeSearchRandom;
+   
 
-            
+
+
+    srand(time(NULL));            
 
     for(int i =100 ;  i<100000; i= i*10)
     {
-            
+        
+        
+
         for(int j =0 ; j<quantHashKey ; j++)
         {
             
+            double endAverageSearch =0;
+        
+            double endColissionAverage = 0;
             
             for(int k=0 ; k < quantTest ; k++)
             {   
@@ -734,7 +747,7 @@ void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTes
 
                 for(int l = 0 ; l<i ; l++){
 
-                  char *string_random = genRandomString(50);
+                  char *string_random = genRandomString( 1+rand()%1000);
                     
                    insertDicitonary(D,string_random);
                     
@@ -746,29 +759,46 @@ void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTes
 
                 for(int m = 0 ; m<quantTest; m++)
                 {
-
                   char *stringSearchRandom = D->V[rand()%i].string;
 
                   timeSearchRandom =  beanchMarkSearch(H,stringSearchRandom);
                     
                   times_Search[m] = timeSearchRandom; 
                 }
-
-                printf("Tempo médio de busca = %lf seg(s)\n", getSearchTimeAverage(times_Search,quantTest));;
-                printf("Colisão média por hash = %lf colisões \n", getAverageColission(H));
-
-
+                
+                
+                
+                double searchTimeAverage = getSearchTimeAverage(times_Search, quantTest);
+                double averageColission = getAverageColission(H);
+                
+                /*
+                printf("Quantidade de String = %d | M = %d\n", i, M[j]);
+                printf("Tempo médio de busca = %lf seg(s) em 10 buscas aleatorias\n", searchTimeAverage);;
+                printf("Colisão média por hash = %lf colisões \n", averageColission);
+                */
+                endAverageSearch+= searchTimeAverage;
+                endColissionAverage+= averageColission;
+                
                 if(times_Search) free(times_Search);
 
                 deleteDictionary(D);
 
                 deleteHashTable(H);
 
-                                                                printf("k=%d | quantTest =%d\n",k ,quantTest);
 
                 
 
-            }    
+            }
+
+            endAverageSearch =endAverageSearch/10.0;
+            
+            endColissionAverage = endColissionAverage/10.0;
+
+            
+            printf("Quantidade de String = %d | M = %d\n", i, M[j]);
+            printf("Tempo médio de busca = %lf seg(s)\n", endAverageSearch);
+            printf("Colisão média por lista da hash table = %lf colisões\n", endColissionAverage);
+            printf("-------------------------------------------------------------\n");
         }
 
 
