@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <time.h>
 
 typedef struct node{
   
@@ -553,9 +554,8 @@ void deleteHashTable(hashTable *H){
         
     }
 
-    free(H->V);
     
-    if(H->V) exit(-1);
+   
 
 }
 
@@ -643,6 +643,147 @@ char *genRandomString(int maxSize){
 
 
 
+float getAverageColission(hashTable *H){
+
+    float average = 0;
+
+    int N = H->M;
+
+    for(int i =0 ; i<N ; i++){
+
+        if(H->V[i].size>1)
+        {
+
+           average = average + H->V[i].size;
+        }    
+    }
+
+    average = average / (float) N;
+    
+    return average;
+}
+
+
+
+
+double beanchMarkSearch(hashTable *H, char *string){
+     
+    clock_t start_time;
+    clock_t end_time;
+    clock_t time;
+    double time_in_seconds; 
+    
+    start_time = clock();
+
+    searchHashTable(H,string);
+
+    end_time = clock();
+    
+    time = end_time - start_time;
+
+    time_in_seconds = ((double)time)/ CLOCKS_PER_SEC;
+
+    return time_in_seconds;
+
+
+}
+
+
+double getSearchTimeAverage(double *T, int N){
+
+    double average =0.0;
+    
+    for(int i =0 ; i<N; i++){
+
+        average = average+ T[i];
+    
+    }
+
+    average = average/(double)N;
+    
+    return average;
+}
+
+
+void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTest){
+
+    double *times_Search;
+    double timeSearchRandom;
+
+            
+
+    for(int i =100 ;  i<100000; i= i*10)
+    {
+            
+        for(int j =0 ; j<quantHashKey ; j++)
+        {
+            
+            
+            for(int k=0 ; k < quantTest ; k++)
+            {   
+
+
+                times_Search = (double*) malloc(sizeof(double)*quantTest*quantTest);
+
+                createHashTable(H,M[j]);
+                
+                createDictionary(D,i);
+
+              
+
+
+                for(int l = 0 ; l<i ; l++){
+
+                  char *string_random = genRandomString(50);
+                    
+                   insertDicitonary(D,string_random);
+                    
+                   insertHashTable(H,string_random);
+                     
+                   free(string_random);
+                
+                }
+
+                for(int m = 0 ; m<quantTest; m++)
+                {
+
+                  char *stringSearchRandom = D->V[rand()%i].string;
+
+                  timeSearchRandom =  beanchMarkSearch(H,stringSearchRandom);
+                    
+                  times_Search[m] = timeSearchRandom; 
+                }
+
+                printf("Tempo médio de busca = %lf seg(s)\n", getSearchTimeAverage(times_Search,quantTest));;
+                printf("Colisão média por hash = %lf colisões \n", getAverageColission(H));
+
+
+                if(times_Search) free(times_Search);
+
+                deleteDictionary(D);
+
+                deleteHashTable(H);
+
+                                                                printf("k=%d | quantTest =%d\n",k ,quantTest);
+
+                
+
+            }    
+        }
+
+
+
+
+
+
+    }
+            
+
+        
+
+    
+
+}
 
 int main(){
 
@@ -650,19 +791,23 @@ int main(){
     
     dictionary dict ;
 
-    createHashTable(&hash,3);
+    int M[3]={31,79,151};
+
+    initTest(&hash, &dict, M, (int)sizeof(M)/4 , 10);
+
+    //createHashTable(&hash,3);
     
-    createDictionary(&dict,10000);
+    //createDictionary(&dict,10000);
 
-    char string_test1[]="A"; // A == 65 % 3 = 2  
-    char string_test2[]="B"; // B == 66 % 3 = 0
-    char string_test3[]="C"; // C == 67 % 3 = 1
-
-    
-
-
+    //char string_test1[]="A"; // A == 65 % 3 = 2  
+    //char string_test2[]="B"; // B == 66 % 3 = 0
+    //char string_test3[]="C"; // C == 67 % 3 = 1
 
     
+
+
+
+    /*
     
     
     
@@ -682,6 +827,8 @@ int main(){
 
       
     }
+
+    */
     
     /*
     for(int i =0 ; i<10000; i++)
@@ -701,14 +848,14 @@ int main(){
 
     //printf("%s\n", c1);
     
-    printf("Standart Deviation in Hash Table = %0.4Lf\n", getStandartDeviationHashTable(&hash));
+    //printf("Standart Deviation in Hash Table = %0.4Lf\n", getStandartDeviationHashTable(&hash));
     
     //free(c1);
         
 
-    deleteDictionary(&dict);
+    //deleteDictionary(&dict);
 
-    deleteHashTable(&hash);
+    //deleteHashTable(&hash);
 
     
 }
