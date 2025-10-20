@@ -674,7 +674,7 @@ double beanchMarkSearch(hashTable *H, char *string){
     clock_t start_time;
     clock_t end_time;
     clock_t time;
-    double time_in_seconds; 
+    double time_in_miseconds; 
     
     start_time = clock();
 
@@ -685,10 +685,10 @@ double beanchMarkSearch(hashTable *H, char *string){
     
     time = end_time - start_time;
 
-    time_in_seconds = ((double)time)/ CLOCKS_PER_SEC;
+    time_in_miseconds = (((double)time)/ CLOCKS_PER_SEC)*1000;
     
     free(c);
-    return time_in_seconds;
+    return time_in_miseconds;
 
 
 }
@@ -715,12 +715,15 @@ void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTes
     double *times_Search;
     double timeSearchRandom;
    
+    FILE *ftpr;
 
-
+    ftpr = fopen("Teste/result.txt", "w");
+    
+    
 
     srand(time(NULL));            
 
-    for(int i =100 ;  i<100000; i= i*10)
+    for(int i =100 ;  i<=100000; i= i*10)
     {
         
         
@@ -796,9 +799,11 @@ void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTes
 
             
             printf("Quantidade de String = %d | M = %d\n", i, M[j]);
-            printf("Tempo médio de busca = %lf seg(s)\n", endAverageSearch);
+            printf("Tempo médio de busca = %lf milisegundo(s)\n", endAverageSearch);
             printf("Colisão média por lista da hash table = %lf colisões\n", endColissionAverage);
             printf("-------------------------------------------------------------\n");
+            
+            fprintf(ftpr, "%d;%d;%lf;%lf\n",i,M[j],endAverageSearch,endColissionAverage);
         }
 
 
@@ -807,6 +812,8 @@ void initTest(hashTable *H, dictionary *D,int *M , int quantHashKey,int quantTes
 
 
     }
+
+    fclose(ftpr);
             
 
         
