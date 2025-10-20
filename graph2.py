@@ -59,7 +59,8 @@ multiplier = 0
 for i, (attribute, measurement) in enumerate(colisionByM.items()):
     offset = (i - (num_bars - 1) / 2) * width
     rects = ax.bar(x + offset, measurement, width, label=f"M={attribute}", color=colors[i % len(colors)], edgecolor='black')
-    ax.bar_label(rects, padding=3, fmt='%.2f')
+    # format each bar label with 4 significant digits
+    ax.bar_label(rects, padding=3, fmt='%.4g')
 
 ax.set_ylabel("Tempo médio de busca de um item na hash table (média)")
 ax.set_title("Tempo em milissegundos")
